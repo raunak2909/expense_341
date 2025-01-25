@@ -1,5 +1,5 @@
-
-import 'package:expenso_341/ui/statistics.dart';
+import 'package:expenso_341/ui/screens/add_expense_page.dart';
+import 'package:expenso_341/ui/screens/statistics.dart';
 import 'package:flutter/material.dart';
 
 class ExpensePage extends StatefulWidget {
@@ -9,9 +9,24 @@ class ExpensePage extends StatefulWidget {
 
 class _ExpensePageState extends State<ExpensePage> {
   List<Map<String, dynamic>> expenses = [
-    {"date": "Tuesday, 14", "title": "Shop", "desc": "Buy new clothes", "amount": 90},
-    {"date": "Tuesday, 14", "title": "Electronic", "desc": "Buy new iPhone", "amount": -1290},
-    {"date": "Monday, 13", "title": "Transportation", "desc": "Trip to Malang", "amount": -60},
+    {
+      "date": "Tuesday, 14",
+      "title": "Shop",
+      "desc": "Buy new clothes",
+      "amount": 90
+    },
+    {
+      "date": "Tuesday, 14",
+      "title": "Electronic",
+      "desc": "Buy new iPhone",
+      "amount": -1290
+    },
+    {
+      "date": "Monday, 13",
+      "title": "Transportation",
+      "desc": "Trip to Malang",
+      "amount": -60
+    },
   ];
 
   String selectedFilter = "This month";
@@ -25,7 +40,7 @@ class _ExpensePageState extends State<ExpensePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 40),
+            const SizedBox(height: 50),
 
             // Header Row
             Row(
@@ -45,7 +60,7 @@ class _ExpensePageState extends State<ExpensePage> {
                     color: Colors.black87,
                   ),
                 ),
-                SizedBox(width: 600),
+                Spacer(),
                 Icon(Icons.search, size: 28),
               ],
             ),
@@ -58,7 +73,8 @@ class _ExpensePageState extends State<ExpensePage> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Morning", style: TextStyle(color: Colors.grey, fontSize: 16)),
+                    Text("Morning",
+                        style: TextStyle(color: Colors.grey, fontSize: 16)),
                     Row(
                       children: [
                         Image.asset(
@@ -68,7 +84,8 @@ class _ExpensePageState extends State<ExpensePage> {
                         ),
                         Text(
                           "Blaszczykowski",
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -105,7 +122,8 @@ class _ExpensePageState extends State<ExpensePage> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Expense total", style: TextStyle(color: Colors.white, fontSize: 16)),
+                      Text("Expense total",
+                          style: TextStyle(color: Colors.white, fontSize: 16)),
                       const SizedBox(height: 8),
                       Text("\$3,734",
                           style: TextStyle(
@@ -116,18 +134,21 @@ class _ExpensePageState extends State<ExpensePage> {
                       Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
                               color: Colors.redAccent,
                               borderRadius: BorderRadius.circular(5),
                             ),
                             child: Text(
                               "+\$240",
-                              style: TextStyle(color: Colors.white, fontSize: 12),
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 12),
                             ),
                           ),
                           const SizedBox(width: 5),
-                          Text("than last month", style: TextStyle(color: Colors.white)),
+                          Text("than last month",
+                              style: TextStyle(color: Colors.white)),
                         ],
                       ),
                     ],
@@ -160,9 +181,7 @@ class _ExpensePageState extends State<ExpensePage> {
                       // Navigate to StatisticPage
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => HomePage()
-                        ),
+                        MaterialPageRoute(builder: (context) => HomePage()),
                       );
                     },
                     child: Container(
@@ -186,12 +205,16 @@ class _ExpensePageState extends State<ExpensePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(expense["date"],
-                                  style: TextStyle(fontSize: 14, color: Colors.grey)),
+                                  style: TextStyle(
+                                      fontSize: 14, color: Colors.grey)),
                               const SizedBox(height: 5),
                               Text(expense["title"],
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold)),
                               Text(expense["desc"],
-                                  style: TextStyle(fontSize: 14, color: Colors.grey)),
+                                  style: TextStyle(
+                                      fontSize: 14, color: Colors.grey)),
                             ],
                           ),
                           Spacer(),
@@ -200,7 +223,9 @@ class _ExpensePageState extends State<ExpensePage> {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: expense["amount"] < 0 ? Colors.red : Colors.green,
+                              color: expense["amount"] < 0
+                                  ? Colors.red
+                                  : Colors.green,
                             ),
                           ),
                         ],
@@ -212,6 +237,16 @@ class _ExpensePageState extends State<ExpensePage> {
             ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AddExpensePage(),
+              ));
+        },
+        child: Icon(Icons.add),
       ),
     );
   }

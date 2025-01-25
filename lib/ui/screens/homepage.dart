@@ -1,5 +1,7 @@
 
-import 'package:expenso_341/ui/expense.dart';
+import 'package:expenso_341/ui/screens/expense.dart';
+import 'package:expenso_341/ui/screens/user_onboarding/login_screen.dart';
+import 'package:expenso_341/ui/screens/user_onboarding/splash_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -17,16 +19,12 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: SplashScreen(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
@@ -145,7 +143,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>  ExpensePage(),
+                          builder: (context) =>  LoginScreen(),
                         ),
                       );
                     },
