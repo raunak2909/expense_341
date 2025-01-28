@@ -1,6 +1,9 @@
 import 'package:expenso_341/ui/screens/add_expense_page.dart';
+import 'package:expenso_341/ui/screens/bloc/expense_bloc.dart';
 import 'package:expenso_341/ui/screens/statistics.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 class ExpensePage extends StatefulWidget {
   @override
@@ -8,7 +11,7 @@ class ExpensePage extends StatefulWidget {
 }
 
 class _ExpensePageState extends State<ExpensePage> {
-  List<Map<String, dynamic>> expenses = [
+ /* List<Map<String, dynamic>> expenses = [
     {
       "date": "Tuesday, 14",
       "title": "Shop",
@@ -27,9 +30,10 @@ class _ExpensePageState extends State<ExpensePage> {
       "desc": "Trip to Malang",
       "amount": -60
     },
-  ];
+  ];*/
 
   String selectedFilter = "This month";
+  DateFormat df = DateFormat.yMMMd();
 
   @override
   Widget build(BuildContext context) {
@@ -172,68 +176,96 @@ class _ExpensePageState extends State<ExpensePage> {
 
             // Expense List
             Expanded(
-              child: ListView.builder(
-                itemCount: expenses.length,
-                itemBuilder: (context, index) {
-                  final expense = expenses[index];
-                  return GestureDetector(
-                    onTap: () {
-                      // Navigate to StatisticPage
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => HomePage()),
-                      );
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: 15),
-                      padding: const EdgeInsets.all(15),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.shade200,
-                            blurRadius: 6,
-                            offset: Offset(0, 4),
-                          )
-                        ],
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(expense["date"],
-                                  style: TextStyle(
-                                      fontSize: 14, color: Colors.grey)),
-                              const SizedBox(height: 5),
-                              Text(expense["title"],
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold)),
-                              Text(expense["desc"],
-                                  style: TextStyle(
-                                      fontSize: 14, color: Colors.grey)),
-                            ],
-                          ),
-                          Spacer(),
-                          Text(
-                            "\$${expense["amount"]}",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: expense["amount"] < 0
-                                  ? Colors.red
-                                  : Colors.green,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+              child:
+                  BlocBuilder<ExpenseBloc, ExpenseState>(
+                      builder: (_, state) {
+                if (state is ExpenseLoadingState) {
+                  return Center(
+                    child: CircularProgressIndicator(),
                   );
-                },
-              ),
+                }
+
+                if (state is ExpenseErrorState) {
+                  return Center(
+                    child: Text(state.errorMsg),
+                  );
+                }
+
+                if (state is ExpenseLoadedState) {
+                  return state.mExpenses.isNotEmpty
+                      ? ListView.builder(
+                          itemCount: state.mExpenses.length,
+                          itemBuilder: (context, index) {
+                            final expense = state.mExpenses[index];
+                            return GestureDetector(
+                              onTap: () {
+                                // Navigate to StatisticPage
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => HomePage()),
+                                );
+                              },
+                              child: Container(
+                                margin: const EdgeInsets.only(bottom: 15),
+                                padding: const EdgeInsets.all(15),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.shade200,
+                                      blurRadius: 6,
+                                      offset: Offset(0, 4),
+                                    )
+                                  ],
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(df.format(DateTime.fromMillisecondsSinceEpoch(int.parse(expense.created_at))),
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.grey)),
+                                        const SizedBox(height: 5),
+                                        Text(expense.title,
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold)),
+                                        Text(expense.desc,
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.grey)),
+                                      ],
+                                    ),
+                                    Spacer(),
+                                    Text(
+                                      "\$${expense.amt}",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: expense.amt! < 0
+                                            ? Colors.red
+                                            : Colors.green,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        )
+                      : Center(
+                          child: Text('No Expenses yet!!'),
+                        );
+                }
+
+                return Container();
+              }),
             ),
           ],
         ),

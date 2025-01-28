@@ -1,11 +1,18 @@
-
+import 'package:expenso_341/ui/screens/bloc/expense_bloc.dart';
 import 'package:expenso_341/ui/screens/expense.dart';
 import 'package:expenso_341/ui/screens/user_onboarding/login_screen.dart';
 import 'package:expenso_341/ui/screens/user_onboarding/splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sqflite/sqflite.dart';
+
+import '../../data/local/db_helper.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(BlocProvider(
+    create: (context) => ExpenseBloc(db: DBHelper.getInstance()),
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -143,7 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>  LoginScreen(),
+                          builder: (context) => LoginScreen(),
                         ),
                       );
                     },
@@ -152,7 +159,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       width: 50,
                       decoration: BoxDecoration(
                         color: Colors.deepPurple,
-                        borderRadius: BorderRadius.circular(15), // Rounded rectangle
+                        borderRadius:
+                            BorderRadius.circular(15), // Rounded rectangle
                       ),
                       child: const Icon(
                         Icons.arrow_forward,

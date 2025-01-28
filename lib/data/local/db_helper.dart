@@ -122,4 +122,18 @@ class DBHelper {
     return rowsEffected>0;
   }
 
+  Future<List<ExpensesModel>> fetchExpense() async{
+    var db = await getDB();
+
+    List<Map<String, dynamic>> mData = await db.query(DB_EXPENSES_TABLE);
+
+    List<ExpensesModel> mExpenses = [];
+
+    for(Map<String, dynamic> eachExp in mData){
+      mExpenses.add(ExpensesModel.fromMap(eachExp));
+    }
+
+    return mExpenses;
+  }
+
 }

@@ -3,8 +3,10 @@ import 'package:expenso_341/data/models/expenses_model.dart';
 import 'package:expenso_341/domain/app_constants.dart';
 import 'package:expenso_341/domain/ui_helper.dart';
 import 'package:expenso_341/ui/custom_widgets/custom_textfield.dart';
+import 'package:expenso_341/ui/screens/bloc/expense_bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -202,7 +204,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
               var prefs = await SharedPreferences.getInstance();
               int uid = prefs.getInt("UID") ?? 0;
               ///implement same with Bloc
-              db.addExpense(expense: ExpensesModel(
+              context.read<ExpenseBloc>().add(AddExpenseEvent(newExpense: ExpensesModel(
                   uid: uid,
                   amt: double.parse(amtController.text),
                   bal: 0,
@@ -210,7 +212,16 @@ class _AddExpensePageState extends State<AddExpensePage> {
                   title: titleController.text,
                   desc: descController.text,
                   exp_type: selectedType,
-                  created_at: (selectedDateTime ?? DateTime.now()).millisecondsSinceEpoch.toString()));
+                  created_at: (selectedDateTime ?? DateTime.now()).millisecondsSinceEpoch.toString())));
+             /* db.addExpense(expense: ExpensesModel(
+                  uid: uid,
+                  amt: double.parse(amtController.text),
+                  bal: 0,
+                  cid: AppConstant.mCat[selectedCatIndex].cid,
+                  title: titleController.text,
+                  desc: descController.text,
+                  exp_type: selectedType,
+                  created_at: (selectedDateTime ?? DateTime.now()).millisecondsSinceEpoch.toString()));*/
 
               Navigator.pop(context);
 
