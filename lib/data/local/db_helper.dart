@@ -125,7 +125,7 @@ class DBHelper {
   Future<List<ExpensesModel>> fetchExpense() async{
     var db = await getDB();
 
-    List<Map<String, dynamic>> mData = await db.query(DB_EXPENSES_TABLE);
+    List<Map<String, dynamic>> mData = await db.query(DB_EXPENSES_TABLE, orderBy: "$TBL_EXPENSE_CREATED_AT DESC");
 
     List<ExpensesModel> mExpenses = [];
 

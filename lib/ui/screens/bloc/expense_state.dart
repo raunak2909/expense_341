@@ -9,6 +9,10 @@ final class ExpenseLoadedState extends ExpenseState {
   List<ExpensesModel> mExpenses;
   ExpenseLoadedState({required this.mExpenses});
 }
+final class ExpenseFilterLoadedState extends ExpenseState {
+  List<ExpenseFilterModel> mFilteredExpenses;
+  ExpenseFilterLoadedState({required this.mFilteredExpenses});
+}
 final class ExpenseErrorState extends ExpenseState {
   String errorMsg;
   ExpenseErrorState({required this.errorMsg});

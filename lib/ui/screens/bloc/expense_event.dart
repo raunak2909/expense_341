@@ -10,6 +10,11 @@ class AddExpenseEvent extends ExpenseEvent{
 
 class FetchInitialExpense extends ExpenseEvent{}
 
+class FetchFilteredExpense extends ExpenseEvent{
+  int type;
+  FetchFilteredExpense({required this.type}); ///0 for date, 1 for month, 2 for year, 3 for cat
+}
+
 ///update
 ///delete
 ///filter

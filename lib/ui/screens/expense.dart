@@ -1,3 +1,8 @@
+import 'dart:math';
+
+import 'package:expenso_341/data/models/expense_filter_model.dart';
+import 'package:expenso_341/data/models/expenses_model.dart';
+import 'package:expenso_341/domain/app_constants.dart';
 import 'package:expenso_341/ui/screens/add_expense_page.dart';
 import 'package:expenso_341/ui/screens/bloc/expense_bloc.dart';
 import 'package:expenso_341/ui/screens/statistics.dart';
@@ -11,6 +16,7 @@ class ExpensePage extends StatefulWidget {
 }
 
 class _ExpensePageState extends State<ExpensePage> {
+  List<ExpenseFilterModel> filteredExpenses = [];
  /* List<Map<String, dynamic>> expenses = [
     {
       "date": "Tuesday, 14",
@@ -32,8 +38,13 @@ class _ExpensePageState extends State<ExpensePage> {
     },
   ];*/
 
-  String selectedFilter = "This month";
-  DateFormat df = DateFormat.yMMMd();
+  @override
+  void initState() {
+    super.initState();
+    context.read<ExpenseBloc>().add(FetchFilteredExpense(type: 0));
+  }
+
+  String selectedFilter = "Date wise";
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +98,7 @@ class _ExpensePageState extends State<ExpensePage> {
                           width: 40,
                         ),
                         Text(
-                          "Blaszczykowski",
+                          " Blaszczykowski",
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
@@ -98,11 +109,22 @@ class _ExpensePageState extends State<ExpensePage> {
                 DropdownButton<String>(
                   value: selectedFilter,
                   onChanged: (String? newValue) {
+
+                    int selectedType=0;
+
+                    if(newValue=="Date wise"){
+                      selectedType=0;
+                    } else if(newValue=="Month wise"){
+                      selectedType=1;
+                    } else {
+                      selectedType=2;
+                    }
+                    context.read<ExpenseBloc>().add(FetchFilteredExpense(type: selectedType));
                     setState(() {
                       selectedFilter = newValue!;
                     });
                   },
-                  items: <String>["This month", "Last month", "This week"]
+                  items: <String>["Date wise", "Month wise", "Year wise"]
                       .map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
@@ -191,12 +213,13 @@ class _ExpensePageState extends State<ExpensePage> {
                   );
                 }
 
-                if (state is ExpenseLoadedState) {
-                  return state.mExpenses.isNotEmpty
+                if (state is ExpenseFilterLoadedState) {
+
+                  return state.mFilteredExpenses.isNotEmpty
                       ? ListView.builder(
-                          itemCount: state.mExpenses.length,
+                          padding: EdgeInsets.zero,
+                          itemCount: state.mFilteredExpenses.length,
                           itemBuilder: (context, index) {
-                            final expense = state.mExpenses[index];
                             return GestureDetector(
                               onTap: () {
                                 // Navigate to StatisticPage
@@ -210,7 +233,11 @@ class _ExpensePageState extends State<ExpensePage> {
                                 margin: const EdgeInsets.only(bottom: 15),
                                 padding: const EdgeInsets.all(15),
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: Color(0xFFF5F5F5),
+                                  border: Border.all(
+                                    color:  Colors.grey.shade400,
+                                    width: 1
+                                  ),
                                   borderRadius: BorderRadius.circular(10),
                                   boxShadow: [
                                     BoxShadow(
@@ -220,39 +247,73 @@ class _ExpensePageState extends State<ExpensePage> {
                                     )
                                   ],
                                 ),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                child: Column(
                                   children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text(df.format(DateTime.fromMillisecondsSinceEpoch(int.parse(expense.created_at))),
+                                        Text(state.mFilteredExpenses[index].type,
                                             style: TextStyle(
-                                                fontSize: 14,
-                                                color: Colors.grey)),
-                                        const SizedBox(height: 5),
-                                        Text(expense.title,
+                                                fontSize: 16,
+                                              fontWeight: FontWeight.bold
+                                            )),
+                                        Spacer(),
+                                        Text(
+                                          "\$${state.mFilteredExpenses[index].balance}",
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: state.mFilteredExpenses[index].balance < 0
+                                                ? Colors.red
+                                                : Colors.green,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Divider(),
+                                    ListView.builder(
+                                      padding: EdgeInsets.zero,
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      itemCount: state.mFilteredExpenses[index].allExpenses.length,
+                                        itemBuilder: (_, childIndex){
+                                      return ListTile(
+                                        contentPadding: EdgeInsets.zero,
+                                        leading: Container(
+                                          padding: EdgeInsets.all(7),
+                                          width: 50,
+                                          height: 50,
+                                          child: Image.asset(AppConstant.mCat.where((eachCat){
+                                            return eachCat.cid==state.mFilteredExpenses[index].allExpenses[childIndex].cid;
+                                          }).toList()[0].cat_img),
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(11),
+                                            color: Colors.primaries[Random().nextInt(Colors.primaries.length-1)].shade100
+                                          ),
+                                        ),
+                                        title: Text(state.mFilteredExpenses[index].allExpenses[childIndex].title,
                                             style: TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.bold)),
-                                        Text(expense.desc,
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                color: Colors.grey)),
-                                      ],
-                                    ),
-                                    Spacer(),
-                                    Text(
-                                      "\$${expense.amt}",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: expense.amt! < 0
-                                            ? Colors.red
-                                            : Colors.green,
-                                      ),
-                                    ),
+                                          subtitle: Text(state.mFilteredExpenses[index].allExpenses[childIndex].desc,
+                                              style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: Colors.grey)),
+                                        trailing: Text(
+                                          "\$${state.mFilteredExpenses[index].allExpenses[childIndex].amt}",
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: state.mFilteredExpenses[index].allExpenses[childIndex].amt! < 0
+                                                ? Colors.red
+                                                : Colors.green,
+                                          ),
+                                        ),
+                                      );
+                                    })
                                   ],
                                 ),
                               ),
@@ -282,7 +343,10 @@ class _ExpensePageState extends State<ExpensePage> {
       ),
     );
   }
+
 }
+
+
 
 class StatisticPage extends StatelessWidget {
   @override
