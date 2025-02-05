@@ -116,15 +116,17 @@ class _ExpensePageState extends State<ExpensePage> {
                       selectedType=0;
                     } else if(newValue=="Month wise"){
                       selectedType=1;
-                    } else {
+                    } else if(newValue=="Year wise") {
                       selectedType=2;
+                    } else {
+                      selectedType=3;
                     }
                     context.read<ExpenseBloc>().add(FetchFilteredExpense(type: selectedType));
                     setState(() {
                       selectedFilter = newValue!;
                     });
                   },
-                  items: <String>["Date wise", "Month wise", "Year wise"]
+                  items: <String>["Date wise", "Month wise", "Year wise", "Cat wise"]
                       .map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
@@ -215,6 +217,7 @@ class _ExpensePageState extends State<ExpensePage> {
 
                 if (state is ExpenseFilterLoadedState) {
 
+
                   return state.mFilteredExpenses.isNotEmpty
                       ? ListView.builder(
                           padding: EdgeInsets.zero,
@@ -229,7 +232,7 @@ class _ExpensePageState extends State<ExpensePage> {
                                       builder: (context) => HomePage()),
                                 );
                               },
-                              child: Container(
+                              child: state.mFilteredExpenses[index].allExpenses.isNotEmpty ? Container(
                                 margin: const EdgeInsets.only(bottom: 15),
                                 padding: const EdgeInsets.all(15),
                                 decoration: BoxDecoration(
@@ -316,7 +319,7 @@ class _ExpensePageState extends State<ExpensePage> {
                                     })
                                   ],
                                 ),
-                              ),
+                              ) : Container(),
                             );
                           },
                         )
