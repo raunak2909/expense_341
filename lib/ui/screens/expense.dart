@@ -351,7 +351,7 @@ class _ExpensePageState extends State<ExpensePage> {
 
 
 
-class StatisticPage extends StatelessWidget {
+/*class StatisticPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -364,4 +364,4 @@ class StatisticPage extends StatelessWidget {
       ),
     );
   }
-}
+}*/

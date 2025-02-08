@@ -5,6 +5,8 @@ import 'package:expenso_341/ui/screens/user_onboarding/registration_screen.dart'
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../statistics.dart';
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -23,7 +25,7 @@ class _SplashScreenState extends State<SplashScreen> {
       Widget navigateTo = LoginScreen();
 
       if (uid > 0) {
-        navigateTo = ExpensePage();
+        navigateTo = StatisticPage();
       }
 
       Navigator.pushReplacement(

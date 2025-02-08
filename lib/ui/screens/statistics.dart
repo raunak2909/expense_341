@@ -1,4 +1,11 @@
+import 'package:d_chart/commons/data_model/data_model.dart';
+import 'package:d_chart/d_chart.dart';
+import 'package:d_chart/ordinal/bar.dart';
+import 'package:expenso_341/data/models/expense_filter_model.dart';
+import 'package:expenso_341/ui/screens/bloc/expense_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -20,7 +27,19 @@ class HomePage extends StatelessWidget {
     );
   }
 }
-class StatisticPage extends StatelessWidget {
+
+class StatisticPage extends StatefulWidget {
+  @override
+  State<StatisticPage> createState() => _StatisticPageState();
+}
+
+class _StatisticPageState extends State<StatisticPage> {
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<ExpenseBloc>().add(FetchFilteredExpense(type: 3));
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,8 +111,8 @@ class StatisticPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text("Expense Breakdown",
-                    style: TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.bold)),
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 DropdownButton<String>(
                   value: "Week",
                   onChanged: (String? newValue) {},
@@ -104,15 +123,58 @@ class StatisticPage extends StatelessWidget {
                       child: Text(value),
                     );
                   }).toList(),
-
                 ),
-
               ],
             ),
             const SizedBox(height: 10),
 
-            const SizedBox(height: 30),
+            ///bar chart
+            BlocBuilder<ExpenseBloc, ExpenseState>(
+              builder: (context, state) {
+                if (state is ExpenseFilterLoadedState) {
 
+                  List<OrdinalGroup> mGroupList = [];
+                  List<OrdinalData> mList = [];
+
+                  for(ExpenseFilterModel eachFilterModel in state.mFilteredExpenses){
+                    mList.add(OrdinalData(domain: eachFilterModel.type, measure: eachFilterModel.balance*-1));
+                  }
+
+                  OrdinalGroup singleData = OrdinalGroup(id: "1", data: mList);
+
+                  mGroupList.add(singleData);
+
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: AspectRatio(
+                      aspectRatio: 16 / 9,
+                      child: DChartBarO(
+                          /*configRenderBar: ConfigRenderBar(
+                            barGroupInnerPaddingPx: 0,
+                            radius: 6,
+                          ),
+                        measureAxis: MeasureAxis(
+                          showLine: true,
+                        ),
+                        animate: true,
+                        vertical: true,
+                        domainAxis: DomainAxis(
+                            showLine: true,
+                            tickLength: 0,
+                            gapAxisToLabel: 12,
+                            labelStyle: LabelStyle(
+                              color: Colors.grey.shade400,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 10,
+                            ),),*/
+                          groupList: mGroupList),
+                    ),
+                  );
+                }
+                return Container();
+              },
+            ),
+            const SizedBox(height: 20),
             // Spending Details Section
             Text("Spending Details",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -198,7 +260,6 @@ class SpendingCard extends StatelessWidget {
               color: Colors.red,
             ),
           ),
-
         ],
       ),
     );
