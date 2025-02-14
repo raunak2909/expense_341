@@ -5,6 +5,7 @@ import 'package:expenso_341/data/models/expenses_model.dart';
 import 'package:expenso_341/domain/app_constants.dart';
 import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../../../data/local/db_helper.dart';
@@ -25,11 +26,13 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
 
       if (check) {
         List<ExpensesModel> allExpenses = await db.fetchExpense();
-
+        /// store last index balance in prefs
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setDouble("lastBal", allExpenses.last.bal ?? 0.0);
         ///2
         //emit(ExpenseLoadedState(mExpenses: allExpenses));
         emit(ExpenseFilterLoadedState(
-            mFilteredExpenses: filterExp(allExpenses, 0)));
+            mFilteredExpenses: filterExp(allExpenses, 0), bal: allExpenses.isNotEmpty ? allExpenses.last.bal ?? 0.0 : 0.0));
       } else {
         ///3
         emit(ExpenseErrorState(errorMsg: "Expense not added"));
@@ -49,6 +52,14 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
 
       List<ExpensesModel> allExpenses = await db.fetchExpense();
 
+      /// store last index balance in prefs
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      if(allExpenses.isNotEmpty) {
+        prefs.setDouble("lastBal", allExpenses.last.bal ?? 0.0);
+      } else {
+        prefs.setDouble("lastBal", 0.0);
+      }
+
       if (event.type == 0) {
         df = DateFormat.yMMMd();
 
@@ -63,7 +74,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
         ///2025
       }
 
-      emit(ExpenseFilterLoadedState(mFilteredExpenses: filterExp(allExpenses, event.type)));
+      emit(ExpenseFilterLoadedState(mFilteredExpenses: filterExp(allExpenses, event.type), bal: allExpenses.isNotEmpty ? allExpenses.last.bal ?? 0.0 : 0.0));
     });
   }
 

@@ -4,6 +4,7 @@ import 'package:expenso_341/domain/app_constants.dart';
 import 'package:expenso_341/domain/ui_helper.dart';
 import 'package:expenso_341/ui/custom_widgets/custom_textfield.dart';
 import 'package:expenso_341/ui/screens/bloc/expense_bloc.dart';
+import 'package:expenso_341/ui/screens/navigation_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -203,11 +204,22 @@ class _AddExpensePageState extends State<AddExpensePage> {
 
               var prefs = await SharedPreferences.getInstance();
               int uid = prefs.getInt("UID") ?? 0;
+
+              /// get last index balance in prefs
+              num lastBal = prefs.getDouble("lastBal") ?? 0.0;
+
+              if(selectedType=="Debit"){
+                lastBal -= double.parse(amtController.text);
+              } else {
+                lastBal += double.parse(amtController.text);
+              }
+
+
               ///implement same with Bloc
               context.read<ExpenseBloc>().add(AddExpenseEvent(newExpense: ExpensesModel(
                   uid: uid,
                   amt: double.parse(amtController.text),
-                  bal: 0,
+                  bal: lastBal.toDouble(),
                   cid: AppConstant.mCat[selectedCatIndex].cid,
                   title: titleController.text,
                   desc: descController.text,
@@ -223,7 +235,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                   exp_type: selectedType,
                   created_at: (selectedDateTime ?? DateTime.now()).millisecondsSinceEpoch.toString()));*/
 
-              Navigator.pop(context);
+              context.read<NavigationProvider>().navIndex = 0;
 
             }, loading: false),
             mSpacer(),

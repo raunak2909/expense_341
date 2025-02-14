@@ -1,16 +1,23 @@
 import 'package:expenso_341/ui/screens/bloc/expense_bloc.dart';
 import 'package:expenso_341/ui/screens/expense.dart';
+import 'package:expenso_341/ui/screens/navigation_provider.dart';
 import 'package:expenso_341/ui/screens/user_onboarding/login_screen.dart';
 import 'package:expenso_341/ui/screens/user_onboarding/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../../data/local/db_helper.dart';
 
 void main() {
-  runApp(BlocProvider(
-    create: (context) => ExpenseBloc(db: DBHelper.getInstance()),
+  runApp(MultiBlocProvider(
+    providers: [
+      BlocProvider(
+        create: (context) => ExpenseBloc(db: DBHelper.getInstance()),
+      ),
+      ChangeNotifierProvider(create: (context) => NavigationProvider(),)
+    ],
     child: MyApp(),
   ));
 }
@@ -179,7 +186,7 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 // Dashboard Page
-class DashboardPage extends StatelessWidget {
+/*class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
 
   @override
@@ -196,4 +203,4 @@ class DashboardPage extends StatelessWidget {
       ),
     );
   }
-}
+}*/

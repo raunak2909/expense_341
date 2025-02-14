@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'package:expenso_341/ui/screens/dashboard_page.dart';
 import 'package:expenso_341/ui/screens/expense.dart';
+import 'package:expenso_341/ui/screens/main.dart';
 import 'package:expenso_341/ui/screens/user_onboarding/login_screen.dart';
 import 'package:expenso_341/ui/screens/user_onboarding/registration_screen.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +27,7 @@ class _SplashScreenState extends State<SplashScreen> {
       Widget navigateTo = LoginScreen();
 
       if (uid > 0) {
-        navigateTo = StatisticPage();
+        navigateTo = DashBoardPage();
       }
 
       Navigator.pushReplacement(
